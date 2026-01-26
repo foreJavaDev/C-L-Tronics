@@ -3,566 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C&L-Tronics Repairs and Printing - Phone Repair, Web Design, System Development</title>
+    <title>C&L-Tronics Repairs and Printing</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="static/css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;overflow-y:auto;padding:1rem}
+        .modal.active{display:flex;align-items:start;justify-content:center}
+        .modal-box{background:#fff;border-radius:1rem;max-width:800px;width:100%;margin:2rem auto}
+        .cart-sidebar{position:fixed;top:0;right:-400px;width:100%;max-width:400px;height:100%;background:#fff;z-index:101;transition:right .3s}
+        .cart-sidebar.active{right:0}
+        .tab-btn.active{color:#7c3aed;border-bottom:2px solid #7c3aed}
+        .tab-content{display:none}.tab-content.active{display:block}
+        .toast{position:fixed;bottom:2rem;right:2rem;padding:1rem;background:#10b981;color:#fff;border-radius:.5rem;z-index:200}
+    </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-purple-600 shadow-lg fixed w-full z-50">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center">
-                    <img src="static/images/CnL Logo_3.svg" style="color: white;" alt="C&L Logo" class="h-16 w-auto">
-                    <span class="ml-4 text-2xl font-bold text-white">C&L-Tronics Repairs and Printing</span>
-                </div>
-                
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#home" class="nav-link text-white hover:text-purple-200 transition-colors">Home</a>
-                    <a href="#about" class="nav-link text-white hover:text-purple-200 transition-colors">About</a>
-                    <a href="#services" class="nav-link text-white hover:text-purple-200 transition-colors">Services</a>
-                    
-                    <!-- Software & Support Dropdown -->
-                    <div class="relative group">
-                        <button class="flex items-center text-white hover:text-purple-200 transition-colors">
-                            Software & Support
-                            <i class="fas fa-chevron-down ml-1 text-xs"></i>
-                        </button>
-                        <div class="absolute top-full left-0 mt-2 w-64 bg-white shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                            <div class="py-2">
-                                <a href="#drivers" class="block px-4 py-2 text-gray-700 hover:bg-purple-50 hover:text-purple-600">
-                                    <i class="fas fa-download mr-2"></i>Drivers for Laptops
-                                </a>
-                                <a href="#software" class="block px-4 py-2 text-gray-700 hover:bg-purple-50 hover:text-purple-600">
-                                    <i class="fas fa-desktop mr-2"></i>Software Downloads
-                                </a>
-                                <a href="#support" class="block px-4 py-2 text-gray-700 hover:bg-purple-50 hover:text-purple-600">
-                                    <i class="fas fa-headset mr-2"></i>Technical Support
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <a href="#contact" class="nav-link text-white hover:text-purple-200 transition-colors">Contact</a>
-                </div>
-                
-                <!-- Mobile menu button -->
-                <div class="md:hidden">
-                    <button id="mobile-menu-btn" class="text-gray-700 hover:text-blue-600">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
-                </div>
+    <nav class="bg-purple-600 fixed w-full z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center"><img src="static/images/CnL Logo_3.svg" alt="Logo" class="h-12 w-auto"><span class="ml-3 text-xl font-bold text-white hidden sm:block">C&L-Tronics</span></div>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#home" class="text-white">Home</a><a href="#services" class="text-white">Services</a><a href="#accessories" class="text-white">Products</a><a href="#about" class="text-white">About</a><a href="#contact" class="text-white">Contact</a>
+                <button onclick="toggleCart()" class="relative text-white p-2"><i class="fas fa-shopping-cart text-xl"></i><span id="cart-count" class="absolute -top-1 -right-1 bg-orange-500 text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span></button>
             </div>
-            
-            <!-- Mobile Navigation -->
-            <div id="mobile-menu" class="hidden md:hidden pb-4">
-                <div class="flex flex-col space-y-4">
-                    <a href="#home" class="mobile-nav-link text-white hover:text-purple-200">Home</a>
-                    <a href="#about" class="mobile-nav-link text-white hover:text-purple-200">About</a>
-                    <a href="#services" class="mobile-nav-link text-white hover:text-purple-200">Services</a>
-                    <div class="space-y-2">
-                        <div class="text-white font-medium">Software & Support</div>
-                        <div class="ml-4 space-y-2">
-                            <a href="#drivers" class="block text-purple-200 hover:text-white">Drivers for Laptops</a>
-                            <a href="#software" class="block text-purple-200 hover:text-white">Software Downloads</a>
-                            <a href="#support" class="block text-purple-200 hover:text-white">Technical Support</a>
-                        </div>
-                    </div>
-                    <a href="#contact" class="mobile-nav-link text-white hover:text-purple-200">Contact</a>
-                </div>
+            <div class="md:hidden flex items-center gap-4">
+                <button onclick="toggleCart()" class="relative text-white"><i class="fas fa-shopping-cart"></i><span id="cart-count-m" class="absolute -top-2 -right-2 bg-orange-500 text-xs rounded-full h-4 w-4 hidden">0</span></button>
+                <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-white"><i class="fas fa-bars"></i></button>
             </div>
         </div>
+        <div id="mobile-menu" class="hidden md:hidden px-4 pb-4"><a href="#home" class="block text-white py-2">Home</a><a href="#services" class="block text-white py-2">Services</a><a href="#contact" class="block text-white py-2">Contact</a></div>
     </nav>
-
-    <!-- Main Content -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black/50 z-100 hidden" onclick="toggleCart()"></div>
+    <div id="cart-sidebar" class="cart-sidebar flex flex-col">
+        <div class="bg-purple-600 text-white p-4 flex justify-between"><h2 class="text-xl font-bold"><i class="fas fa-shopping-cart mr-2"></i>Cart</h2><button onclick="toggleCart()" class="text-2xl">&times;</button></div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-4"></div>
+        <div class="border-t p-4 bg-gray-50"><div class="flex justify-between mb-4"><span>Total:</span><span id="cart-total" class="text-xl font-bold text-purple-600">R0.00</span></div><button onclick="openCheckout()" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold">Checkout</button></div>
+    </div>
     <main class="pt-20">
-        <!-- Home Section -->
-        <section id="home" class="min-h-screen flex items-center bg-gradient-to-br from-blue-50 to-indigo-100">
-            <div class="max-w-7xl mx-auto px-4 py-20">
-                <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h1 class="text-5xl md:text-6xl font-bold text-gray-800 mb-6">
-                            Your Complete
-                            <span class="text-blue-600">Tech Solution</span>
-                        </h1>
-                        <p class="text-xl text-gray-600 mb-8">
-                            We provide comprehensive technology services including phone repair, web design, 
-                            system development, laptop repair, printing, and internet services.
-                        </p>
-                        <div class="flex flex-col sm:flex-row gap-4">
-                            <a href="#services" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors text-center">
-                                Our Services
-                            </a>
-                            <a href="#contact" class="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg hover:bg-blue-600 hover:text-white transition-colors text-center">
-                                Get Quote
-                            </a>
-                        </div>
+        <section id="home" class="min-h-screen flex items-center bg-gradient-to-br from-purple-50 to-indigo-100">
+            <div class="max-w-7xl mx-auto px-4 py-16"><div class="grid md:grid-cols-2 gap-12 items-center">
+                <div><h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">Your Complete <span class="text-purple-600">Tech Solution</span></h1><p class="text-lg text-gray-600 mb-8">Phone repair, web design, system development, laptop repair, printing, and internet services.</p><div class="flex gap-4 flex-wrap"><a href="#services" class="bg-purple-600 text-white px-6 py-3 rounded-lg">Our Services</a><a href="#contact" class="border-2 border-purple-600 text-purple-600 px-6 py-3 rounded-lg">Get Quote</a></div></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-4">
+                        <div onclick="openModal('phone')" class="bg-white p-5 rounded-xl shadow-lg cursor-pointer hover:shadow-xl"><i class="fas fa-mobile-alt text-2xl text-blue-600 mb-3"></i><h3 class="font-semibold mb-1">Phone Repairs</h3><p class="text-sm text-gray-500 mb-2">iPhones, Android, Huawei</p><span class="text-purple-600 text-sm">See more →</span></div>
+                        <div onclick="openModal('laptop')" class="bg-white p-5 rounded-xl shadow-lg cursor-pointer hover:shadow-xl"><i class="fas fa-laptop text-2xl text-green-600 mb-3"></i><h3 class="font-semibold mb-1">Laptop Repairs</h3><p class="text-sm text-gray-500 mb-2">MacBooks, Windows, Linux</p><span class="text-purple-600 text-sm">See more →</span></div>
                     </div>
-                    <div class="relative">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-4">
-                                <div class="bg-white p-6 rounded-lg shadow-lg">
-                                    <i class="fas fa-mobile-alt text-3xl text-blue-600 mb-4"></i>
-                                    <h3 class="text-xl font-semibold mb-2">Phone Repairs & Software Upgrades</h3>
-                                    <p class="text-gray-600">Iphones, Android, Huawei Device <a href="#"> see more</a></p>
-                                </div>
-                                <div class="bg-white p-6 rounded-lg shadow-lg">
-                                    <i class="fas fa-laptop text-3xl text-green-600 mb-4"></i>
-                                    <h3 class="text-xl font-semibold mb-2">Laptop Repair & Software Upgrades</h3>
-                                    <p class="text-gray-600">MacBooks, Windows & Linux OSs <a href="#">see more</a></p>
-                                </div>
-                            </div>
-                            <div class="space-y-4 mt-8">
-                                <div class="bg-white p-6 rounded-lg shadow-lg">
-                                    <i class="fas fa-code text-3xl text-purple-600 mb-4"></i>
-                                    <h3 class="text-xl font-semibold mb-2">Software Development</h3>
-                                    <p class="text-gray-600">Web Designing, System Dev, SEO Opt & Cloud Deployment <a href="#">see more</a></p>
-                                </div>
-                                <div class="bg-white p-6 rounded-lg shadow-lg">
-                                    <i class="fas fa-cogs text-3xl text-orange-600 mb-4"></i>
-                                    <h3 class="text-xl font-semibold mb-2">Large & Small Scale Printing</h3>
-                                    <p class="text-gray-600">Vynls, Banners, T-Shirts, Posters <a href="#">see more</a></p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="space-y-4 mt-8">
+                        <div onclick="openModal('software')" class="bg-white p-5 rounded-xl shadow-lg cursor-pointer hover:shadow-xl"><i class="fas fa-code text-2xl text-purple-600 mb-3"></i><h3 class="font-semibold mb-1">Software Dev</h3><p class="text-sm text-gray-500 mb-2">Web, Systems, SEO, Cloud</p><span class="text-purple-600 text-sm">See more →</span></div>
+                        <div onclick="openModal('printing')" class="bg-white p-5 rounded-xl shadow-lg cursor-pointer hover:shadow-xl"><i class="fas fa-print text-2xl text-orange-600 mb-3"></i><h3 class="font-semibold mb-1">Printing Services</h3><p class="text-sm text-gray-500 mb-2">Vinyls, Banners, T-Shirts</p><span class="text-purple-600 text-sm">See more →</span></div>
                     </div>
+                </div>
+            </div></div>
+        </section>
+        <section id="accessories" class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-12">Accessories & Products</h2>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white rounded-xl shadow-lg p-4 border"><img src="static/images/WhatsApp Image 2024-09-18 at 16.54.53_edcb149b.jpg" alt="Phone" class="w-full h-40 object-cover rounded-lg mb-4"><h3 class="font-semibold mb-1">Phone Accessories</h3><p class="text-sm text-gray-500 mb-2">Cases, chargers</p><p class="text-purple-600 font-bold mb-3">From R50</p><div class="flex gap-2"><button class="flex-1 bg-purple-600 text-white py-2 rounded-lg text-sm">View</button><button onclick="addToCart('Phone Accessories',50)" class="flex-1 bg-orange-500 text-white py-2 rounded-lg text-sm"><i class="fas fa-cart-plus"></i> Add</button></div></div>
+                    <div class="bg-white rounded-xl shadow-lg p-4 border"><img src="static/images/WhatsApp Image 2024-09-23 at 04.32.39_5f25bdf5.jpg" alt="Laptop" class="w-full h-40 object-cover rounded-lg mb-4"><h3 class="font-semibold mb-1">Laptop Accessories</h3><p class="text-sm text-gray-500 mb-2">Bags, chargers</p><p class="text-purple-600 font-bold mb-3">From R150</p><div class="flex gap-2"><button class="flex-1 bg-purple-600 text-white py-2 rounded-lg text-sm">View</button><button onclick="addToCart('Laptop Accessories',150)" class="flex-1 bg-orange-500 text-white py-2 rounded-lg text-sm"><i class="fas fa-cart-plus"></i> Add</button></div></div>
+                    <div class="bg-white rounded-xl shadow-lg p-4 border"><img src="static/images/WhatsApp Image 2024-09-23 at 04.32.40_bd16130a.jpg" alt="Gaming" class="w-full h-40 object-cover rounded-lg mb-4"><h3 class="font-semibold mb-1">Gaming Accessories</h3><p class="text-sm text-gray-500 mb-2">Mice, keyboards</p><p class="text-purple-600 font-bold mb-3">From R200</p><div class="flex gap-2"><button class="flex-1 bg-purple-600 text-white py-2 rounded-lg text-sm">View</button><button onclick="addToCart('Gaming Accessories',200)" class="flex-1 bg-orange-500 text-white py-2 rounded-lg text-sm"><i class="fas fa-cart-plus"></i> Add</button></div></div>
+                    <div class="bg-white rounded-xl shadow-lg p-4 border"><img src="static/images/WhatsApp Image 2024-09-23 at 04.32.42_4d5300a6.jpg" alt="Audio" class="w-full h-40 object-cover rounded-lg mb-4"><h3 class="font-semibold mb-1">Audio Equipment</h3><p class="text-sm text-gray-500 mb-2">Speakers, headphones</p><p class="text-purple-600 font-bold mb-3">From R120</p><div class="flex gap-2"><button class="flex-1 bg-purple-600 text-white py-2 rounded-lg text-sm">View</button><button onclick="addToCart('Audio Equipment',120)" class="flex-1 bg-orange-500 text-white py-2 rounded-lg text-sm"><i class="fas fa-cart-plus"></i> Add</button></div></div>
                 </div>
             </div>
         </section>
-
-        <!-- Accessories Section -->
-        <section id="accessories" class="py-20 bg-white">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Accessories & Products</h2>
-                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                        Quality accessories and products for all your technology needs
-                    </p>
-                </div>
-                
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <!-- Accessory items will be dynamically loaded -->
-                    <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-4">
-                        <img src="static/images/WhatsApp Image 2024-09-18 at 16.54.53_edcb149b.jpg" 
-                             alt="Accessory 1" class="w-full h-48 object-cover rounded-lg mb-4">
-                        <h3 class="text-lg font-semibold mb-2">Phone Accessories</h3>
-                        <p class="text-gray-600 text-sm mb-3">High-quality phone cases, chargers, and accessories</p>
-                        <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                            View Details
-                        </button>
-                    </div>
-                    
-                    <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-4">
-                        <img src="static/images/WhatsApp Image 2024-09-23 at 04.32.39_5f25bdf5.jpg" 
-                             alt="Accessory 2" class="w-full h-48 object-cover rounded-lg mb-4">
-                        <h3 class="text-lg font-semibold mb-2">Laptop Accessories</h3>
-                        <p class="text-gray-600 text-sm mb-3">Laptop bags, chargers, and essential accessories</p>
-                        <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                            View Details
-                        </button>
-                    </div>
-                    
-                    <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-4">
-                        <img src="static/images/WhatsApp Image 2024-09-23 at 04.32.40_bd16130a.jpg" 
-                             alt="Accessory 3" class="w-full h-48 object-cover rounded-lg mb-4">
-                        <h3 class="text-lg font-semibold mb-2">Gaming Accessories</h3>
-                        <p class="text-gray-600 text-sm mb-3">Gaming mice, keyboards, and headsets</p>
-                        <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                            View Details
-                        </button>
-                    </div>
-                    
-                    <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-4">
-                        <img src="static/images/WhatsApp Image 2024-09-23 at 04.32.42_4d5300a6.jpg" 
-                             alt="Accessory 4" class="w-full h-48 object-cover rounded-lg mb-4">
-                        <h3 class="text-lg font-semibold mb-2">Audio Equipment</h3>
-                        <p class="text-gray-600 text-sm mb-3">Speakers, headphones, and audio accessories</p>
-                        <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                            View Details
-                        </button>
-                    </div>
+        <section id="services" class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-12">Our Services</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-xl p-6 shadow-lg text-center"><div class="bg-blue-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-mobile-alt text-xl text-blue-600"></i></div><h3 class="font-semibold mb-2">Phone Repair</h3><p class="text-gray-500 text-sm mb-4">Screen, battery, software</p><button onclick="openModal('phone')" class="w-full bg-purple-600 text-white py-2 rounded-lg">View Pricing</button></div>
+                    <div class="bg-white rounded-xl p-6 shadow-lg text-center"><div class="bg-green-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-laptop text-xl text-green-600"></i></div><h3 class="font-semibold mb-2">Laptop Repair</h3><p class="text-gray-500 text-sm mb-4">Hardware, virus, upgrades</p><button onclick="openModal('laptop')" class="w-full bg-purple-600 text-white py-2 rounded-lg">View Pricing</button></div>
+                    <div class="bg-white rounded-xl p-6 shadow-lg text-center"><div class="bg-purple-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-code text-xl text-purple-600"></i></div><h3 class="font-semibold mb-2">Web & Software</h3><p class="text-gray-500 text-sm mb-4">Websites, apps, SEO</p><button onclick="openModal('software')" class="w-full bg-purple-600 text-white py-2 rounded-lg">View Pricing</button></div>
+                    <div class="bg-white rounded-xl p-6 shadow-lg text-center"><div class="bg-orange-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-print text-xl text-orange-600"></i></div><h3 class="font-semibold mb-2">Printing</h3><p class="text-gray-500 text-sm mb-4">Banners, t-shirts, docs</p><button onclick="openModal('printing')" class="w-full bg-purple-600 text-white py-2 rounded-lg">View Pricing</button></div>
+                    <div class="bg-white rounded-xl p-6 shadow-lg text-center"><div class="bg-indigo-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-wifi text-xl text-indigo-600"></i></div><h3 class="font-semibold mb-2">Internet</h3><p class="text-gray-500 text-sm mb-4">WiFi, network, security</p><button onclick="openModal('internet')" class="w-full bg-purple-600 text-white py-2 rounded-lg">View Pricing</button></div>
+                    <div class="bg-white rounded-xl p-6 shadow-lg text-center"><div class="bg-red-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-headset text-xl text-red-600"></i></div><h3 class="font-semibold mb-2">Tech Support</h3><p class="text-gray-500 text-sm mb-4">Remote & on-site</p><button onclick="openModal('support')" class="w-full bg-purple-600 text-white py-2 rounded-lg">View Pricing</button></div>
                 </div>
             </div>
         </section>
-
-        <!-- Services Section -->
-        <section id="services" class="py-20 bg-gray-50">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Our Services</h2>
-                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                        Comprehensive technology solutions to meet all your digital needs
-                    </p>
-                </div>
-                
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Phone Repair -->
-                    <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-                        <div class="text-center">
-                            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <i class="fas fa-mobile-alt text-2xl text-blue-600"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold mb-4">Phone Repair</h3>
-                            <p class="text-gray-600 mb-6">
-                                Professional repair services for all smartphone brands including screen replacement, 
-                                battery replacement, and software issues.
-                            </p>
-                            <ul class="text-left text-gray-600 space-y-2">
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Screen Replacement</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Battery Replacement</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Software Issues</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Water Damage Repair</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Web Design -->
-                    <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-                        <div class="text-center">
-                            <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <i class="fas fa-code text-2xl text-purple-600"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold mb-4">Web Design</h3>
-                            <p class="text-gray-600 mb-6">
-                                Modern, responsive websites that look great on all devices and drive results for your business.
-                            </p>
-                            <ul class="text-left text-gray-600 space-y-2">
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Responsive Design</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>SEO Optimization</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>E-commerce Solutions</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Content Management</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- System Development -->
-                    <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-                        <div class="text-center">
-                            <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <i class="fas fa-cogs text-2xl text-orange-600"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold mb-4">System Development</h3>
-                            <p class="text-gray-600 mb-6">
-                                Custom software solutions tailored to your business needs and workflow requirements.
-                            </p>
-                            <ul class="text-left text-gray-600 space-y-2">
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Custom Applications</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Database Design</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>API Development</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>System Integration</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Laptop Repair -->
-                    <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-                        <div class="text-center">
-                            <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <i class="fas fa-laptop text-2xl text-green-600"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold mb-4">Laptop Repair</h3>
-                            <p class="text-gray-600 mb-6">
-                                Expert laptop diagnostics and repair services for all major brands and models.
-                            </p>
-                            <ul class="text-left text-gray-600 space-y-2">
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Hardware Repair</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Virus Removal</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Data Recovery</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Performance Upgrade</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Printing & Copying -->
-                    <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-                        <div class="text-center">
-                            <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <i class="fas fa-print text-2xl text-red-600"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold mb-4">Printing & Copying</h3>
-                            <p class="text-gray-600 mb-6">
-                                High-quality printing and copying services for documents, photos, and promotional materials.
-                            </p>
-                            <ul class="text-left text-gray-600 space-y-2">
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Document Printing</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Photo Printing</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Large Format Printing</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Binding Services</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Internet Services -->
-                    <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-                        <div class="text-center">
-                            <div class="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <i class="fas fa-wifi text-2xl text-indigo-600"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold mb-4">Internet Services</h3>
-                            <p class="text-gray-600 mb-6">
-                                Comprehensive internet solutions including setup, troubleshooting, and optimization.
-                            </p>
-                            <ul class="text-left text-gray-600 space-y-2">
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>WiFi Setup</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Network Troubleshooting</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Security Setup</li>
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>Speed Optimization</li>
-                            </ul>
-                        </div>
-                    </div>
+        <section id="about" class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-12">About Our Team</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 text-center"><img src="static/images/leanmore front card.jpg" alt="Leanmore" class="w-40 h-40 rounded-full object-cover mx-auto mb-4 shadow-lg"><h3 class="text-xl font-bold">Leanmore</h3><p class="text-blue-600 font-medium mb-3">CEO & Co-Founder</p><p class="text-gray-600 text-sm">Bachelor's in CS, University of The People. 2.5 years in system development.</p></div>
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 text-center"><img src="static/images/chester front.jpg" alt="Chester" class="w-40 h-40 rounded-full object-cover mx-auto mb-4 shadow-lg"><h3 class="text-xl font-bold">Chester</h3><p class="text-green-600 font-medium mb-3">CEO & Co-Founder</p><p class="text-gray-600 text-sm">Astronomy & Astro-physics, Wits University. 4 years in web & hardware.</p></div>
                 </div>
             </div>
         </section>
-
-        <!-- About Section -->
-        <section id="about" class="py-20 bg-white">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-4">About Our Team</h2>
-                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                        Meet our experienced CEOs who lead our team of skilled professionals 
-                        in delivering exceptional technology services.
-                    </p>
-                </div>
-                
+        <section id="contact" class="py-16 bg-gray-900 text-white">
+            <div class="max-w-7xl mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-12">Get In Touch</h2>
                 <div class="grid md:grid-cols-2 gap-12">
-                    <!-- Leanmore Card -->
-                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 shadow-lg">
-                        <div class="text-center">
-                            <div class="relative mb-6">
-                                <img src="static/images/leanmore front card.jpg" alt="Leanmore" 
-                                     class="w-48 h-48 rounded-full object-cover mx-auto shadow-lg">
-                                <div class="absolute -bottom-2 -right-2 bg-blue-600 text-white p-3 rounded-full">
-                                    <i class="fas fa-crown text-xl"></i>
-                                </div>
-                            </div>
-                            <h3 class="text-2xl font-bold text-gray-800 mb-2">Leanmore</h3>
-                            <p class="text-blue-600 font-semibold mb-4">CEO & Co-Founder</p>
-                            <p class="text-gray-600 mb-4">
-                                Majored In Bachelor's degree in Computer Science from University of The People, USA.
-                                Leading our technical operations with 2.5 years of experience 
-                                in system development and IT infrastructure.
-                            </p>
-                            <div class="mb-4">
-                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"><a href="leanmoreforeresume.netlify.app">Potfolio</a></span>
-                                <!-- <h4 class="font-semibold text-gray-800 mb-2">Expertise:</h4>
-                                <div class="flex flex-wrap gap-2 justify-center">
-                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"><a>Potfolio</a></span> -->
-                                    <!-- <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Web Development</span>
-                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Laptop & Cellphone Repairs</span> -->
-                                <!-- </div> -->
-                            </div>
-                            <!-- <div class="flex justify-center space-x-4">
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-blue-600">50+</div>
-                                    <div class="text-sm text-gray-600"><a href="leanmoreforeresume.netlify.app">Portfio</a></div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-blue-600">30+</div>
-                                    <div class="text-sm text-gray-600">github community contributions</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-blue-600">98%</div>
-                                    <div class="text-sm text-gray-600">Client Satisfaction</div>
-                                </div>
-                            </div> -->
-                        </div>
+                    <div class="space-y-6">
+                        <div class="flex items-center"><div class="bg-purple-600 p-3 rounded-full mr-4"><i class="fas fa-map-marker-alt"></i></div><div><h4 class="font-semibold">Address</h4><p class="text-gray-300">123 Tech Street, Digital City</p></div></div>
+                        <div class="flex items-center"><div class="bg-purple-600 p-3 rounded-full mr-4"><i class="fas fa-phone"></i></div><div><h4 class="font-semibold">Phone</h4><p class="text-gray-300">+1 (555) 123-4567</p></div></div>
+                        <div class="flex items-center"><div class="bg-purple-600 p-3 rounded-full mr-4"><i class="fas fa-envelope"></i></div><div><h4 class="font-semibold">Email</h4><p class="text-gray-300">info@cnltechservices.com</p></div></div>
                     </div>
-                    
-                    <!-- Chester Card -->
-                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 shadow-lg">
-                        <div class="text-center">
-                            <div class="relative mb-6">
-                                <img src="static/images/chester front.jpg" alt="Chester" 
-                                     class="w-48 h-48 rounded-full object-cover mx-auto shadow-lg">
-                                <div class="absolute -bottom-2 -right-2 bg-green-600 text-white p-3 rounded-full">
-                                    <i class="fas fa-star text-xl"></i>
-                                </div>
-                            </div>
-                            <h3 class="text-2xl font-bold text-gray-800 mb-2">Chester</h3>
-                            <p class="text-green-600 font-semibold mb-4">CEO & Co-Founder</p>
-                            <p class="text-gray-600 mb-6">
-                                Majored in Astronomy & Astro-physics at Wits University, South Africa.
-                                Spearheading our customer service and business development 
-                                with expertise of 4yrs in web design, digital solutions & computer Hardware solutions.
-                            </p>
-                            <!-- <div class="flex justify-center space-x-4">
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-green-600">300+</div>
-                                    <div class="text-sm text-gray-600">Websites Built</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-green-600">95%</div>
-                                    <div class="text-sm text-gray-600">Repeat Clients</div>
-                                </div>
-                            </div> -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section id="contact" class="py-20 bg-gray-900 text-white">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold mb-4">Get In Touch</h2>
-                    <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-                        Ready to get started? Contact us today for a free consultation and quote.
-                    </p>
-                </div>
-                
-                <div class="grid md:grid-cols-2 gap-12">
-                    <div>
-                        <h3 class="text-2xl font-semibold mb-6">Contact Information</h3>
-                        <div class="space-y-6">
-                            <div class="flex items-center">
-                                <div class="bg-blue-600 p-3 rounded-full mr-4">
-                                    <i class="fas fa-map-marker-alt text-white"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold">Address</h4>
-                                    <p class="text-gray-300">123 Tech Street, Digital City, DC 12345</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center">
-                                <div class="bg-blue-600 p-3 rounded-full mr-4">
-                                    <i class="fas fa-phone text-white"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold">Phone</h4>
-                                    <p class="text-gray-300">+1 (555) 123-4567</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center">
-                                <div class="bg-blue-600 p-3 rounded-full mr-4">
-                                    <i class="fas fa-envelope text-white"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold">Email</h4>
-                                    <p class="text-gray-300">info@cnltechservices.com</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center">
-                                <div class="bg-blue-600 p-3 rounded-full mr-4">
-                                    <i class="fas fa-clock text-white"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold">Business Hours</h4>
-                                    <p class="text-gray-300">Mon-Fri: 8AM-6PM, Sat: 9AM-4PM</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <h3 class="text-2xl font-semibold mb-6">Send us a Message</h3>
-                        <form class="space-y-4">
-                            <div class="grid md:grid-cols-2 gap-4">
-                                <input type="text" placeholder="First Name" 
-                                       class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500">
-                                <input type="text" placeholder="Last Name" 
-                                       class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500">
-                            </div>
-                            <input type="email" placeholder="Email Address" 
-                                   class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500">
-                            <input type="tel" placeholder="Phone Number" 
-                                   class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500">
-                            <select class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500">
-                                <option>Select Service</option>
-                                <option>Phone Repair</option>
-                                <option>Web Design</option>
-                                <option>System Development</option>
-                                <option>Laptop Repair</option>
-                                <option>Printing & Copying</option>
-                                <option>Internet Services</option>
-                            </select>
-                            <textarea placeholder="Message" rows="4" 
-                                      class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-blue-500"></textarea>
-                            <button type="submit" 
-                                    class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                                Send Message
-                            </button>
-                        </form>
-                    </div>
+                    <form class="space-y-4" onsubmit="event.preventDefault();showToast('Message sent!')">
+                        <div class="grid grid-cols-2 gap-4"><input type="text" placeholder="First Name" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg" required><input type="text" placeholder="Last Name" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg" required></div>
+                        <input type="email" placeholder="Email" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg" required>
+                        <textarea placeholder="Message" rows="4" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg"></textarea>
+                        <button type="submit" class="w-full bg-purple-600 py-3 rounded-lg font-semibold">Send Message</button>
+                    </form>
                 </div>
             </div>
         </section>
     </main>
-
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-12">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center mb-4">
-                        <img src="static/images/logo.svg" alt="C&L Logo" class="h-12 w-auto">
-                        <span class="ml-3 text-lg font-bold">C&L-Tronics Repairs and Printing</span>
-                    </div>
-                    <p class="text-gray-300 mb-4">
-                        Your complete technology solution provider for all your digital needs.
-                    </p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">
-                            <i class="fab fa-facebook text-xl"></i>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">
-                            <i class="fab fa-twitter text-xl"></i>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">
-                            <i class="fab fa-instagram text-xl"></i>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-blue-500 transition-colors">
-                            <i class="fab fa-linkedin text-xl"></i>
-                        </a>
-                    </div>
+    <!-- Phone Modal -->
+    <div id="phone-modal" class="modal" onclick="if(event.target===this)closeModal('phone')">
+        <div class="modal-box">
+            <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-t-xl flex justify-between"><h2 class="text-xl font-bold"><i class="fas fa-mobile-alt mr-2"></i>Phone Repairs</h2><button onclick="closeModal('phone')" class="text-2xl">&times;</button></div>
+            <div class="p-6">
+                <div class="flex border-b mb-4 overflow-x-auto"><button class="tab-btn active px-4 py-2" onclick="switchTab(this,'iphone')">iPhone</button><button class="tab-btn px-4 py-2 text-gray-500" onclick="switchTab(this,'samsung')">Samsung</button><button class="tab-btn px-4 py-2 text-gray-500" onclick="switchTab(this,'huawei')">Huawei</button></div>
+                <div id="iphone" class="tab-content active space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Screen Replacement</h4><p class="text-sm text-gray-500">iPhone 11-15</p></div><div class="text-right"><p class="font-bold text-purple-600">R1,200-R3,500</p><button onclick="addToCart('iPhone Screen',1200)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Battery Replacement</h4><p class="text-sm text-gray-500">All models</p></div><div class="text-right"><p class="font-bold text-purple-600">R450-R850</p><button onclick="addToCart('iPhone Battery',450)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Charging Port</h4></div><div class="text-right"><p class="font-bold text-purple-600">R350-R600</p><button onclick="addToCart('iPhone Port',350)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Software Update</h4></div><div class="text-right"><p class="font-bold text-purple-600">R200-R400</p><button onclick="addToCart('iOS Update',200)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
                 </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Services</h4>
-                    <ul class="space-y-2 text-gray-300">
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">Phone Repair</a></li>
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">Web Design</a></li>
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">System Development</a></li>
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">Laptop Repair</a></li>
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">Printing & Copying</a></li>
-                    </ul>
+                <div id="samsung" class="tab-content space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Screen Replacement</h4><p class="text-sm text-gray-500">Galaxy S/Note</p></div><div class="text-right"><p class="font-bold text-purple-600">R1,000-R4,000</p><button onclick="addToCart('Samsung Screen',1000)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Battery</h4></div><div class="text-right"><p class="font-bold text-purple-600">R400-R750</p><button onclick="addToCart('Samsung Battery',400)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
                 </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Support</h4>
-                    <ul class="space-y-2 text-gray-300">
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">Drivers Download</a></li>
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">Software Downloads</a></li>
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">Technical Support</a></li>
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">FAQ</a></li>
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">Contact Support</a></li>
-                    </ul>
+                <div id="huawei" class="tab-content space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Screen Replacement</h4><p class="text-sm text-gray-500">P/Mate Series</p></div><div class="text-right"><p class="font-bold text-purple-600">R800-R2,500</p><button onclick="addToCart('Huawei Screen',800)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Battery</h4></div><div class="text-right"><p class="font-bold text-purple-600">R350-R600</p><button onclick="addToCart('Huawei Battery',350)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
                 </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Company</h4>
-                    <ul class="space-y-2 text-gray-300">
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">About Us</a></li>
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">Our Team</a></li>
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">Careers</a></li>
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-blue-500 transition-colors">Terms of Service</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
-                <p>&copy; 2024 C&L-Tronics Repairs and Printing. All rights reserved.</p>
             </div>
         </div>
-    </footer>
-
-    <script src="static/javascript/script.js"></script>
+    </div>
+    <!-- Laptop Modal -->
+    <div id="laptop-modal" class="modal" onclick="if(event.target===this)closeModal('laptop')">
+        <div class="modal-box">
+            <div class="bg-gradient-to-r from-green-600 to-green-700 text-white p-4 rounded-t-xl flex justify-between"><h2 class="text-xl font-bold"><i class="fas fa-laptop mr-2"></i>Laptop Repairs</h2><button onclick="closeModal('laptop')" class="text-2xl">&times;</button></div>
+            <div class="p-6">
+                <div class="flex border-b mb-4"><button class="tab-btn active px-4 py-2" onclick="switchTab(this,'macbook')">MacBook</button><button class="tab-btn px-4 py-2 text-gray-500" onclick="switchTab(this,'windows')">Windows</button><button class="tab-btn px-4 py-2 text-gray-500" onclick="switchTab(this,'upgrades')">Upgrades</button></div>
+                <div id="macbook" class="tab-content active space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Screen Replacement</h4></div><div class="text-right"><p class="font-bold text-purple-600">R3,500-R8,000</p><button onclick="addToCart('MacBook Screen',3500)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Battery</h4></div><div class="text-right"><p class="font-bold text-purple-600">R1,800-R3,200</p><button onclick="addToCart('MacBook Battery',1800)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">macOS Install</h4></div><div class="text-right"><p class="font-bold text-purple-600">R350-R600</p><button onclick="addToCart('macOS Install',350)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                </div>
+                <div id="windows" class="tab-content space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Screen Replacement</h4></div><div class="text-right"><p class="font-bold text-purple-600">R1,200-R3,500</p><button onclick="addToCart('Laptop Screen',1200)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Windows Install</h4></div><div class="text-right"><p class="font-bold text-purple-600">R300-R500</p><button onclick="addToCart('Windows Install',300)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Virus Removal</h4></div><div class="text-right"><p class="font-bold text-purple-600">R250-R450</p><button onclick="addToCart('Virus Removal',250)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                </div>
+                <div id="upgrades" class="tab-content space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">RAM Upgrade</h4><p class="text-sm text-gray-500">8/16/32GB</p></div><div class="text-right"><p class="font-bold text-purple-600">R600-R2,500</p><button onclick="addToCart('RAM Upgrade',600)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">SSD Upgrade</h4><p class="text-sm text-gray-500">256GB-1TB</p></div><div class="text-right"><p class="font-bold text-purple-600">R800-R3,000</p><button onclick="addToCart('SSD Upgrade',800)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Software Modal -->
+    <div id="software-modal" class="modal" onclick="if(event.target===this)closeModal('software')">
+        <div class="modal-box">
+            <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-4 rounded-t-xl flex justify-between"><h2 class="text-xl font-bold"><i class="fas fa-code mr-2"></i>Software Development</h2><button onclick="closeModal('software')" class="text-2xl">&times;</button></div>
+            <div class="p-6">
+                <div class="flex border-b mb-4 overflow-x-auto"><button class="tab-btn active px-4 py-2" onclick="switchTab(this,'webdesign')">Web Design</button><button class="tab-btn px-4 py-2 text-gray-500" onclick="switchTab(this,'systems')">Systems</button><button class="tab-btn px-4 py-2 text-gray-500" onclick="switchTab(this,'seo')">SEO</button><button class="tab-btn px-4 py-2 text-gray-500" onclick="switchTab(this,'cloud')">Cloud</button></div>
+                <div id="webdesign" class="tab-content active space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Landing Page</h4></div><div class="text-right"><p class="font-bold text-purple-600">R2,500-R5,000</p><button onclick="addToCart('Landing Page',2500)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Business Website</h4><p class="text-sm text-gray-500">5-10 pages</p></div><div class="text-right"><p class="font-bold text-purple-600">R8,000-R15,000</p><button onclick="addToCart('Business Website',8000)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">E-commerce</h4></div><div class="text-right"><p class="font-bold text-purple-600">R15,000-R35,000</p><button onclick="addToCart('E-commerce Site',15000)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                </div>
+                <div id="systems" class="tab-content space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Custom Web App</h4></div><div class="text-right"><p class="font-bold text-purple-600">R20,000-R80,000</p><button onclick="addToCart('Web Application',20000)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Database Design</h4></div><div class="text-right"><p class="font-bold text-purple-600">R5,000-R15,000</p><button onclick="addToCart('Database Design',5000)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">API Development</h4></div><div class="text-right"><p class="font-bold text-purple-600">R8,000-R25,000</p><button onclick="addToCart('API Development',8000)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                </div>
+                <div id="seo" class="tab-content space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">SEO Audit</h4></div><div class="text-right"><p class="font-bold text-purple-600">R1,500-R3,000</p><button onclick="addToCart('SEO Audit',1500)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Monthly SEO</h4></div><div class="text-right"><p class="font-bold text-purple-600">R2,500-R8,000/mo</p><button onclick="addToCart('Monthly SEO',2500)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                </div>
+                <div id="cloud" class="tab-content space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Cloud Hosting Setup</h4></div><div class="text-right"><p class="font-bold text-purple-600">R2,000-R8,000</p><button onclick="addToCart('Cloud Setup',2000)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Domain & Email</h4></div><div class="text-right"><p class="font-bold text-purple-600">R500-R1,500</p><button onclick="addToCart('Domain Setup',500)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Printing Modal -->
+    <div id="printing-modal" class="modal" onclick="if(event.target===this)closeModal('printing')">
+        <div class="modal-box">
+            <div class="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-t-xl flex justify-between"><h2 class="text-xl font-bold"><i class="fas fa-print mr-2"></i>Printing Services</h2><button onclick="closeModal('printing')" class="text-2xl">&times;</button></div>
+            <div class="p-6">
+                <div class="flex border-b mb-4 overflow-x-auto"><button class="tab-btn active px-4 py-2" onclick="switchTab(this,'docs')">Documents</button><button class="tab-btn px-4 py-2 text-gray-500" onclick="switchTab(this,'banners')">Banners/Vinyls</button><button class="tab-btn px-4 py-2 text-gray-500" onclick="switchTab(this,'apparel')">T-Shirts</button><button class="tab-btn px-4 py-2 text-gray-500" onclick="switchTab(this,'promo')">Promotional</button></div>
+                <div id="docs" class="tab-content active space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">B&W Print (A4)</h4><p class="text-sm text-gray-500">Per page</p></div><div class="text-right"><p class="font-bold text-purple-600">R1.50-R2.50</p><button onclick="addToCart('B&W Print x10',15)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add 10</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Color Print (A4)</h4></div><div class="text-right"><p class="font-bold text-purple-600">R5-R8</p><button onclick="addToCart('Color Print x10',50)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add 10</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Binding</h4></div><div class="text-right"><p class="font-bold text-purple-600">R25-R80</p><button onclick="addToCart('Binding',25)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Business Cards (100)</h4></div><div class="text-right"><p class="font-bold text-purple-600">R150-R350</p><button onclick="addToCart('Business Cards',150)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                </div>
+                <div id="banners" class="tab-content space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">PVC Banner</h4><p class="text-sm text-gray-500">Per sqm</p></div><div class="text-right"><p class="font-bold text-purple-600">R120-R180</p><button onclick="addToCart('PVC Banner 1sqm',120)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Vinyl Stickers</h4><p class="text-sm text-gray-500">Per sqm</p></div><div class="text-right"><p class="font-bold text-purple-600">R150-R250</p><button onclick="addToCart('Vinyl 1sqm',150)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Roll-Up Banner</h4></div><div class="text-right"><p class="font-bold text-purple-600">R450-R750</p><button onclick="addToCart('Roll-Up Banner',450)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Vehicle Branding</h4></div><div class="text-right"><p class="font-bold text-purple-600">R8,000-R25,000</p><button onclick="addToCart('Vehicle Wrap',8000)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                </div>
+                <div id="apparel" class="tab-content space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">T-Shirt DTG</h4></div><div class="text-right"><p class="font-bold text-purple-600">R120-R200</p><button onclick="addToCart('T-Shirt DTG',120)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">T-Shirt Vinyl</h4></div><div class="text-right"><p class="font-bold text-purple-600">R80-R150</p><button onclick="addToCart('T-Shirt Vinyl',80)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Hoodie Print</h4></div><div class="text-right"><p class="font-bold text-purple-600">R250-R450</p><button onclick="addToCart('Hoodie Print',250)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Cap Embroidery</h4></div><div class="text-right"><p class="font-bold text-purple-600">R80-R150</p><button onclick="addToCart('Cap Embroidery',80)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                </div>
+                <div id="promo" class="tab-content space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Flyers (100)</h4></div><div class="text-right"><p class="font-bold text-purple-600">R180-R300</p><button onclick="addToCart('Flyers 100',180)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Poster (A2)</h4></div><div class="text-right"><p class="font-bold text-purple-600">R45-R80</p><button onclick="addToCart('A2 Poster',45)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Custom Mug</h4></div><div class="text-right"><p class="font-bold text-purple-600">R85-R120</p><button onclick="addToCart('Custom Mug',85)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Internet Modal -->
+    <div id="internet-modal" class="modal" onclick="if(event.target===this)closeModal('internet')">
+        <div class="modal-box">
+            <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white p-4 rounded-t-xl flex justify-between"><h2 class="text-xl font-bold"><i class="fas fa-wifi mr-2"></i>Internet Services</h2><button onclick="closeModal('internet')" class="text-2xl">&times;</button></div>
+            <div class="p-6 space-y-3">
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">WiFi Setup</h4></div><div class="text-right"><p class="font-bold text-purple-600">R250</p><button onclick="addToCart('WiFi Setup',250)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Mesh Network</h4></div><div class="text-right"><p class="font-bold text-purple-600">R500-R1,200</p><button onclick="addToCart('Mesh Setup',500)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Network Troubleshoot</h4></div><div class="text-right"><p class="font-bold text-purple-600">R200-R500</p><button onclick="addToCart('Network Fix',200)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Security Setup</h4></div><div class="text-right"><p class="font-bold text-purple-600">R400-R1,000</p><button onclick="addToCart('Security Setup',400)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+            </div>
+        </div>
+    </div>
+    <!-- Support Modal -->
+    <div id="support-modal" class="modal" onclick="if(event.target===this)closeModal('support')">
+        <div class="modal-box">
+            <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-4 rounded-t-xl flex justify-between"><h2 class="text-xl font-bold"><i class="fas fa-headset mr-2"></i>Tech Support</h2><button onclick="closeModal('support')" class="text-2xl">&times;</button></div>
+            <div class="p-6 space-y-3">
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Remote Support</h4><p class="text-sm text-gray-500">Per hour</p></div><div class="text-right"><p class="font-bold text-purple-600">R150-R250</p><button onclick="addToCart('Remote Support 1hr',150)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">On-Site Support</h4></div><div class="text-right"><p class="font-bold text-purple-600">R350-R600</p><button onclick="addToCart('On-Site Support',350)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><div><h4 class="font-medium">Monthly IT Package</h4></div><div class="text-right"><p class="font-bold text-purple-600">R1,500-R5,000/mo</p><button onclick="addToCart('Monthly IT',1500)" class="text-sm bg-orange-500 text-white px-3 py-1 rounded mt-1">Add</button></div></div>
+            </div>
+        </div>
+    </div>
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal" onclick="if(event.target===this)closeModal('checkout')">
+        <div class="modal-box max-w-lg">
+            <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-4 rounded-t-xl flex justify-between"><h2 class="text-xl font-bold"><i class="fas fa-credit-card mr-2"></i>Checkout</h2><button onclick="closeModal('checkout')" class="text-2xl">&times;</button></div>
+            <div class="p-6">
+                <div id="checkout-items" class="space-y-2 mb-4"></div>
+                <div class="border-t pt-4 mb-6 flex justify-between text-xl font-bold"><span>Total:</span><span id="checkout-total" class="text-purple-600">R0.00</span></div>
+                <form onsubmit="submitOrder(event)" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4"><input type="text" placeholder="First Name" class="w-full px-4 py-2 border rounded-lg" required><input type="text" placeholder="Last Name" class="w-full px-4 py-2 border rounded-lg" required></div>
+                    <input type="email" placeholder="Email" class="w-full px-4 py-2 border rounded-lg" required>
+                    <input type="tel" placeholder="Phone" class="w-full px-4 py-2 border rounded-lg" required>
+                    <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-sm text-yellow-800"><i class="fas fa-info-circle mr-2"></i>Payment on delivery or in-store.</div>
+                    <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg font-bold"><i class="fas fa-check-circle mr-2"></i>Confirm Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <footer class="bg-gray-800 text-white py-8"><div class="max-w-7xl mx-auto px-4 text-center"><p>&copy; 2024 C&L-Tronics Repairs and Printing. All rights reserved.</p></div></footer>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cnl-cart')) || [];
+        function updateCartUI() {
+            const count = cart.reduce((s,i) => s + i.qty, 0);
+            const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+            document.getElementById('cart-count').textContent = count;
+            document.getElementById('cart-count').classList.toggle('hidden', count === 0);
+            document.getElementById('cart-count-m').textContent = count;
+            document.getElementById('cart-count-m').classList.toggle('hidden', count === 0);
+            document.getElementById('cart-total').textContent = 'R' + total.toFixed(2);
+            const container = document.getElementById('cart-items');
+            if (cart.length === 0) { container.innerHTML = '<p class="text-gray-500 text-center py-8">Your cart is empty</p>'; }
+            else { container.innerHTML = cart.map((item, i) => '<div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg mb-2"><div><p class="font-medium">'+item.name+'</p><p class="text-purple-600">R'+item.price.toFixed(2)+'</p></div><div class="flex items-center gap-2"><button onclick="changeQty('+i+',-1)" class="w-7 h-7 bg-gray-200 rounded">-</button><span>'+item.qty+'</span><button onclick="changeQty('+i+',1)" class="w-7 h-7 bg-gray-200 rounded">+</button><button onclick="removeItem('+i+')" class="text-red-500 ml-2"><i class="fas fa-trash"></i></button></div></div>').join(''); }
+            localStorage.setItem('cnl-cart', JSON.stringify(cart));
+        }
+        function addToCart(name, price) {
+            const existing = cart.find(i => i.name === name);
+            if (existing) existing.qty++; else cart.push({ name, price, qty: 1 });
+            updateCartUI(); showToast(name + ' added!');
+        }
+        function changeQty(index, delta) { cart[index].qty += delta; if (cart[index].qty <= 0) cart.splice(index, 1); updateCartUI(); }
+        function removeItem(index) { cart.splice(index, 1); updateCartUI(); }
+        function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('active'); document.getElementById('cart-overlay').classList.toggle('hidden'); }
+        function openModal(id) { document.getElementById(id + '-modal').classList.add('active'); }
+        function closeModal(id) { document.getElementById(id + '-modal').classList.remove('active'); }
+        function switchTab(btn, tabId) {
+            const parent = btn.closest('.p-6');
+            parent.querySelectorAll('.tab-btn').forEach(t => { t.classList.remove('active'); t.classList.add('text-gray-500'); });
+            btn.classList.add('active'); btn.classList.remove('text-gray-500');
+            parent.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+        function openCheckout() {
+            if (cart.length === 0) return; toggleCart();
+            const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+            document.getElementById('checkout-items').innerHTML = cart.map(i => '<div class="flex justify-between p-2 bg-gray-50 rounded"><span>'+i.name+' x'+i.qty+'</span><span class="font-medium">R'+(i.price * i.qty).toFixed(2)+'</span></div>').join('');
+            document.getElementById('checkout-total').textContent = 'R' + total.toFixed(2);
+            openModal('checkout');
+        }
+        function submitOrder(e) { e.preventDefault(); cart = []; updateCartUI(); closeModal('checkout'); showToast('Order submitted! We will contact you soon.'); }
+        function showToast(msg) { const toast = document.createElement('div'); toast.className = 'toast'; toast.innerHTML = '<i class="fas fa-check-circle mr-2"></i>' + msg; document.body.appendChild(toast); setTimeout(() => toast.remove(), 3000); }
+        updateCartUI();
+    </script>
 </body>
-</html> 
+</html>
